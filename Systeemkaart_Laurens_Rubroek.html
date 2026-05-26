@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Systeemkaart Laurens Rubroek</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f8f9fa; font-family: Arial, sans-serif; overflow: hidden; }
+  #canvas { width: 100%; height: 100vh; }
+  svg { width: 100%; height: 100%; }
+  .node-circle { cursor: pointer; stroke-width: 2.5; transition: opacity 0.2s; }
+  .node-label { font-size: 11px; font-weight: 600; pointer-events: none; text-anchor: middle; dominant-baseline: middle; fill: #fff; }
+  .node-sublabel { font-size: 9px; pointer-events: none; text-anchor: middle; dominant-baseline: middle; fill: rgba(255,255,255,0.85); }
+  .link { fill: none; stroke-width: 1.8; opacity: 0.7; }
+  .link-label { font-size: 9px; fill: #555; pointer-events: none; }
+  .loop-label { font-size: 10px; font-weight: 700; pointer-events: none; }
+  #legend { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.95); border: 1px solid #ddd; border-radius: 8px; padding: 12px 14px; font-size: 10px; max-width: 190px; }
+  #legend h3 { font-size: 11px; font-weight: 700; margin-bottom: 8px; color: #333; }
+  .leg-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; color: #444; }
+  .leg-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .leg-line { width: 22px; height: 3px; flex-shrink: 0; border-radius: 2px; }
+  #tooltip { position: absolute; background: rgba(20,20,20,0.88); color: #fff; font-size: 11px; border-radius: 6px; padding: 8px 10px; max-width: 240px; pointer-events: none; display: none; line-height: 1.5; z-index: 99; }
+  #controls { position: absolute; bottom: 12px; right: 12px; display: flex; gap: 6px; }
+  .ctrl-btn { background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 5px 10px; font-size: 11px; cursor: pointer; color: #333; }
+  .ctrl-btn:hover { background: #f0f0f0; }
+  #loop-panel { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.95); border: 1px solid #ddd; border-radius: 8px; padding: 12px 14px; font-size: 10px; max-width: 200px; }
+  #loop-panel h3 { font-size: 11px; font-weight: 700; margin-bottom: 8px; color: #333; }
+  .loop-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; cursor: pointer; color: #444; padding: 3px 4px; border-radius: 4px; transition: background 0.15s; }
+  .loop-row:hover { background: #f0f0f0; }
+  .loop-badge { font-size: 9px; font-weight: 700; border-radius: 3px; padding: 1px 5px; color: #fff; flex-shrink: 0; }
+  #title-bar { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(31,78,121,0.92); color: #fff; border-radius: 8px; padding: 7px 18px; font-size: 12px; font-weight: 700; pointer-events: none; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="canvas"><svg id="svg"></svg></div>
+<div id="title-bar">Systeemkaart Laurens Rubroek — Verbinding ouderen &amp; jongeren</div>
+<div id="legend">
+  <h3>Knooppunten</h3>
+  <div class="leg-row"><div class="leg-dot" style="background:#1F4E79"></div>Actoren</div>
+  <div class="leg-row"><div class="leg-dot" style="background:#C00000"></div>Spanningspunten</div>
+  <div class="leg-row"><div class="leg-dot" style="background:#2E75B6"></div>Processen</div>
+  <div class="leg-row"><div class="leg-dot" style="background:#375623"></div>Kansen/Hulpbronnen</div>
+  <div class="leg-row"><div class="leg-dot" style="background:#7030A0"></div>Randvoorwaarden</div>
+  <h3 style="margin-top:10px">Verbanden</h3>
+  <div class="leg-row"><div class="leg-line" style="background:#555"></div>Neutraal</div>
+  <div class="leg-row"><div class="leg-line" style="background:#C00000"></div>Versterkend (R)</div>
+  <div class="leg-row"><div class="leg-line" style="background:#2E75B6"></div>Balancerend (B)</div>
+</div>
+<div id="loop-panel">
+  <h3>Feedbackloops</h3>
+  <div class="loop-row" data-loop="R1"><div class="loop-badge" style="background:#C00000">R1</div>Isolatieloop</div>
+  <div class="loop-row" data-loop="R2"><div class="loop-badge" style="background:#C00000">R2</div>Camille-effect</div>
+  <div class="loop-row" data-loop="R3"><div class="loop-badge" style="background:#C00000">R3</div>Wederkerigheidsloop</div>
+  <div class="loop-row" data-loop="B1"><div class="loop-badge" style="background:#2E75B6">B1</div>Autonomieverlies</div>
+  <div class="loop-row" data-loop="B2"><div class="loop-badge" style="background:#2E75B6">B2</div>Personeelsdruk</div>
+  <div class="loop-row" data-loop="B3"><div class="loop-badge" style="background:#2E75B6">B3</div>Rituaalverlies</div>
+</div>
+<div id="tooltip"></div>
+<div id="controls">
+  <button class="ctrl-btn" id="resetBtn">Reset weergave</button>
+  <button class="ctrl-btn" id="allLoopsBtn">Alle loops</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const W=window.innerWidth,H=window.innerHeight,cx=W/2,cy=H/2;
+const nodes=[
+  {id:'bewoners',label:'Bewoners',sub:'ouderen',color:'#1F4E79',r:38,info:'Diverse groep: van zelfstandig (Gerrit) tot volledig zorgafhankelijk (Nico). Allen bezitten levenswijsheid en verlangen naar wederkerig contact.'},
+  {id:'jongeren',label:'Jongeren',sub:'buiten huis',color:'#1F4E79',r:34,info:'Volledig afwezig als structurele groep. Bewoners kennen nauwelijks jongeren. Potentieel groot: technologie, energie, frisse blik.'},
+  {id:'camille',label:'Jonge mede-',sub:'werkers (Camille)',color:'#1F4E79',r:30,info:'Camille (19) is het bewijs dat verbinding werkt. Wordt door meerdere bewoners spontaan als ideaal voorbeeld aangehaald. Nog niet structureel verankerd.'},
+  {id:'begeleiders',label:'Activiteiten-',sub:'begeleiders',color:'#1F4E79',r:30,info:'Carline en Jolanda zijn het scharnierpunt voor activiteiten. Essentieel maar structureel overvraagd.'},
+  {id:'familie',label:'Familie',sub:'kinderen/kleinkin.',color:'#1F4E79',r:26,info:'Sporadisch aanwezig. Werk, afstand of familieconflicten beperken bezoek.'},
+  {id:'eenzaamheid',label:'Structurele',sub:'eenzaamheid',color:'#C00000',r:36,info:'Bewoners zijn omringd door mensen maar missen diepgaand contact. Zichtbaar bij alle 8 respondenten.'},
+  {id:'personeels',label:'Personeels-',sub:'tekort',color:'#C00000',r:30,info:'Medewerkers hebben te weinig tijd voor persoonlijk contact. Kleine extraatjes (nagels, buiten) vallen buiten de vaste taken.'},
+  {id:'rituaalverlies',label:'Verdwenen',sub:'ritueel',color:'#C00000',r:30,info:'De gewoonte kinderen naar ouderen te sturen is weggevallen. Er is geen enkel structureel mechanisme voor intergenerationeel contact.'},
+  {id:'kloof',label:'Generatie-',sub:'kloof (stijl)',color:'#C00000',r:26,info:'Jongeren: technologie, informaliteit. Ouderen: structuur, respect. Beide nodig maar botsen zonder voorbereiding.'},
+  {id:'zingeving',label:'Zingeving &',sub:'activiteit',color:'#2E75B6',r:34,info:'Haken, punniken, knutselen, kaarten maken. Maar het aanbod is homogeen en sluit niet aan op diverse capaciteiten.'},
+  {id:'onbenut',label:'Onbenutte',sub:'levenswijsheid',color:'#2E75B6',r:34,info:'Scheepsbouw (Gerrit), onderwijs (Evelina), bloemisterie (Arie), scheikunde (Jan): enorme kennisreserve volledig onbenut.'},
+  {id:'autonomie',label:'Autonomie-',sub:'behoefte',color:'#2E75B6',r:28,info:'"Ik kan alles nog zelf." (Gerrit) De zorglogica ondermijnt autonomie systematisch.'},
+  {id:'buiten',label:'Naar buiten',sub:'wijk/natuur',color:'#2E75B6',r:28,info:'De meest universele wens van bijna alle bewoners. Tegelijk het minst gefaciliteerd.'},
+  {id:'wederkerig',label:'Wederkerig-',sub:'heid (potentieel)',color:'#375623',r:32,info:'Bewoners willen niet alleen ontvangen maar ook geven: kennis, verhalen, humor, gezelschap.'},
+  {id:'katalysator',label:'Verbindings-',sub:'katalysatoren',color:'#375623',r:30,info:'Muziek, handwerk, koken, zeevissen, moestuin, stijl: gedeelde activiteiten die generaties verbinden.'},
+  {id:'ritueel_nieuw',label:'Nieuw',sub:'ritueel',color:'#375623',r:26,info:'Een hedendaags ritueel: vaste, kleine, regelmatige activiteit die intergenerationeel contact structureert.'},
+  {id:'respect',label:'Respect +',sub:'vrijwilligheid',color:'#7030A0',r:28,info:'"Niet jij en een jouwe, dan stuur ik je de deur uit." (Gerrit) Non-onderhandelbare randvoorwaarde.'},
+  {id:'maatwerk',label:'Maatwerk',sub:'per profiel',color:'#7030A0',r:24,info:'Van Gerrit (zeevissen) tot Nico (muziek, stilte): geen one-size-fits-all aanpak.'},
+];
+const positions={bewoners:{x:cx-10,y:cy-10},jongeren:{x:cx+240,y:cy-130},camille:{x:cx+160,y:cy+130},begeleiders:{x:cx-180,y:cy+150},familie:{x:cx-260,y:cy-80},eenzaamheid:{x:cx-50,y:cy-160},personeels:{x:cx-230,y:cy+30},rituaalverlies:{x:cx-160,y:cy-200},kloof:{x:cx+150,y:cy+30},zingeving:{x:cx+60,y:cy-200},onbenut:{x:cx+200,y:cy-30},autonomie:{x:cx-100,y:cy+100},buiten:{x:cx+80,y:cy+180},wederkerig:{x:cx+130,y:cy-170},katalysator:{x:cx+300,y:cy+80},ritueel_nieuw:{x:cx-20,y:cy+230},respect:{x:cx+50,y:cy+100},maatwerk:{x:cx+230,y:cy+200}};
+nodes.forEach(n=>{n.x=positions[n.id]?.x??cx;n.y=positions[n.id]?.y??cy;});
+const links=[
+  {source:'eenzaamheid',target:'zingeving',label:'+',loop:'R1',color:'#C00000'},
+  {source:'zingeving',target:'autonomie',label:'+',loop:'R1',color:'#C00000'},
+  {source:'autonomie',target:'eenzaamheid',label:'-',loop:'R1',color:'#C00000'},
+  {source:'camille',target:'wederkerig',label:'+',loop:'R2',color:'#E97132'},
+  {source:'wederkerig',target:'bewoners',label:'+',loop:'R2',color:'#E97132'},
+  {source:'bewoners',target:'camille',label:'+',loop:'R2',color:'#E97132'},
+  {source:'wederkerig',target:'onbenut',label:'+',loop:'R3',color:'#70AD47'},
+  {source:'onbenut',target:'katalysator',label:'+',loop:'R3',color:'#70AD47'},
+  {source:'katalysator',target:'jongeren',label:'+',loop:'R3',color:'#70AD47'},
+  {source:'jongeren',target:'wederkerig',label:'+',loop:'R3',color:'#70AD47'},
+  {source:'personeels',target:'autonomie',label:'-',loop:'B1',color:'#2E75B6'},
+  {source:'autonomie',target:'bewoners',label:'+',loop:'B1',color:'#2E75B6'},
+  {source:'bewoners',target:'personeels',label:'+',loop:'B1',color:'#2E75B6'},
+  {source:'personeels',target:'eenzaamheid',label:'+',loop:'B2',color:'#5B9BD5'},
+  {source:'eenzaamheid',target:'bewoners',label:'+',loop:'B2',color:'#5B9BD5'},
+  {source:'bewoners',target:'begeleiders',label:'+',loop:'B2',color:'#5B9BD5'},
+  {source:'begeleiders',target:'personeels',label:'-',loop:'B2',color:'#5B9BD5'},
+  {source:'rituaalverlies',target:'familie',label:'+',loop:'B3',color:'#9DC3E6'},
+  {source:'familie',target:'eenzaamheid',label:'-',loop:'B3',color:'#9DC3E6'},
+  {source:'eenzaamheid',target:'rituaalverlies',label:'+',loop:'B3',color:'#9DC3E6'},
+  {source:'kloof',target:'jongeren',label:'-',color:'#999'},
+  {source:'kloof',target:'bewoners',label:'-',color:'#999'},
+  {source:'respect',target:'kloof',label:'overg.',color:'#7030A0'},
+  {source:'maatwerk',target:'katalysator',label:'+',color:'#7030A0'},
+  {source:'ritueel_nieuw',target:'rituaalverlies',label:'opl.',color:'#375623'},
+  {source:'ritueel_nieuw',target:'wederkerig',label:'+',color:'#375623'},
+  {source:'buiten',target:'katalysator',label:'+',color:'#375623'},
+  {source:'jongeren',target:'kloof',label:'-',color:'#999'},
+  {source:'onbenut',target:'eenzaamheid',label:'+',color:'#999'},
+  {source:'buiten',target:'eenzaamheid',label:'-',color:'#999'},
+];
+const svg=d3.select('#svg'),g=svg.append('g');
+const defs=svg.append('defs');
+['#555','#C00000','#E97132','#70AD47','#2E75B6','#5B9BD5','#9DC3E6','#7030A0','#375623','#999'].forEach(col=>{
+  const id='arr'+col.replace('#','');
+  defs.append('marker').attr('id',id).attr('markerWidth',8).attr('markerHeight',8).attr('refX',7).attr('refY',3).attr('orient','auto')
+    .append('path').attr('d','M0,0 L0,6 L8,3 z').attr('fill',col).attr('opacity',0.85);
+});
+let activeLoop=null;
+function getMarker(col){return`url(#arr${col.replace('#','')})`;} 
+function arcPath(sx,sy,tx,ty,r){const dx=tx-sx,dy=ty-sy,dr=Math.sqrt(dx*dx+dy*dy)*r;return`M${sx},${sy} A${dr},${dr} 0 0,1 ${tx},${ty}`;}
+const linkElems=g.selectAll('.link').data(links).enter().append('path').attr('class','link').attr('stroke',d=>d.color||'#555').attr('marker-end',d=>getMarker(d.color||'#555')).attr('stroke-dasharray',d=>d.loop?null:'4,3');
+const linkLabels=g.selectAll('.link-label').data(links).enter().append('text').attr('class','link-label').text(d=>d.label||'');
+const loopInfo=[{id:'R1',label:'R1 Isolatie',x:cx-50,y:cy-90,color:'#C00000'},{id:'R2',label:'R2 Camille',x:cx+130,y:cy+10,color:'#E97132'},{id:'R3',label:'R3 Wederkerig',x:cx+220,y:cy-100,color:'#70AD47'},{id:'B1',label:'B1 Autonomie',x:cx-110,y:cy+60,color:'#2E75B6'},{id:'B2',label:'B2 Personeel',x:cx-130,y:cy+100,color:'#5B9BD5'},{id:'B3',label:'B3 Rituaal',x:cx-100,y:cy-130,color:'#9DC3E6'}];
+const loopLabels=g.selectAll('.loop-label').data(loopInfo).enter().append('text').attr('class','loop-label').attr('x',d=>d.x).attr('y',d=>d.y).attr('fill',d=>d.color).text(d=>d.label).attr('opacity',0.7);
+const nodeG=g.selectAll('.node-g').data(nodes).enter().append('g').attr('class','node-g')
+  .call(d3.drag().on('start',(ev,d)=>{d.dragging=true;}).on('drag',(ev,d)=>{d.x=ev.x;d.y=ev.y;tick();}).on('end',(ev,d)=>{d.dragging=false;}))
+  .on('mouseover',(ev,d)=>{const tt=document.getElementById('tooltip');tt.innerHTML=`<strong>${d.label} ${d.sub}</strong><br>${d.info}`;tt.style.display='block';tt.style.left=(ev.pageX+12)+'px';tt.style.top=(ev.pageY-30)+'px';})
+  .on('mousemove',ev=>{const tt=document.getElementById('tooltip');tt.style.left=(ev.pageX+12)+'px';tt.style.top=(ev.pageY-30)+'px';})
+  .on('mouseout',()=>{document.getElementById('tooltip').style.display='none';});
+nodeG.append('circle').attr('class','node-circle').attr('r',d=>d.r).attr('fill',d=>d.color).attr('stroke',d=>d3.color(d.color).darker(0.6));
+nodeG.append('text').attr('class','node-label').attr('y',d=>d.sub?-5:0).text(d=>d.label);
+nodeG.append('text').attr('class','node-sublabel').attr('y',7).text(d=>d.sub||'');
+function tick(){
+  nodeG.attr('transform',d=>`translate(${d.x},${d.y})`);
+  linkElems.attr('d',d=>{const sn=nodes.find(n=>n.id===d.source),tn=nodes.find(n=>n.id===d.target);if(!sn||!tn)return'';const dx=tn.x-sn.x,dy=tn.y-sn.y,dist=Math.sqrt(dx*dx+dy*dy)||1;return arcPath(sn.x+dx/dist*sn.r,sn.y+dy/dist*sn.r,tn.x-dx/dist*(tn.r+6),tn.y-dy/dist*(tn.r+6),d.loop?1.5:1.2);});
+  linkLabels.attr('x',d=>{const sn=nodes.find(n=>n.id===d.source),tn=nodes.find(n=>n.id===d.target);return sn&&tn?(sn.x+tn.x)/2:0;}).attr('y',d=>{const sn=nodes.find(n=>n.id===d.source),tn=nodes.find(n=>n.id===d.target);return sn&&tn?(sn.y+tn.y)/2-8:0;});
+}
+tick();
+const zoom=d3.zoom().scaleExtent([0.3,3]).on('zoom',ev=>g.attr('transform',ev.transform));
+svg.call(zoom);
+function highlightLoop(loopId){if(activeLoop===loopId){activeLoop=null;resetHighlight();return;}activeLoop=loopId;linkElems.attr('opacity',d=>d.loop===loopId?1:0.12).attr('stroke-width',d=>d.loop===loopId?3:1.8);nodeG.attr('opacity',d=>{const ln=links.filter(l=>l.loop===loopId);return ln.some(l=>l.source===d.id||l.target===d.id)?1:0.2;});loopLabels.attr('opacity',d=>d.id===loopId?1:0.15);linkLabels.attr('opacity',d=>d.loop===loopId?1:0);}
+function resetHighlight(){activeLoop=null;linkElems.attr('opacity',0.7).attr('stroke-width',1.8);nodeG.attr('opacity',1);loopLabels.attr('opacity',0.7);linkLabels.attr('opacity',1);}
+document.querySelectorAll('.loop-row').forEach(el=>el.addEventListener('click',()=>highlightLoop(el.dataset.loop)));
+document.getElementById('resetBtn').addEventListener('click',()=>{resetHighlight();svg.transition().duration(400).call(zoom.transform,d3.zoomIdentity);});
+document.getElementById('allLoopsBtn').addEventListener('click',resetHighlight);
+</script>
+</body>
+</html>
