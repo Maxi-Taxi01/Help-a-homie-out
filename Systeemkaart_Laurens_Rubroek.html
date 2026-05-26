@@ -5,34 +5,40 @@
 <title>Systeemkaart Laurens Rubroek</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #f8f9fa; font-family: Arial, sans-serif; overflow: hidden; }
+  body { background: #f8f9fa; font-family: Arial, sans-serif; }
   #canvas { width: 100%; height: 100vh; }
   svg { width: 100%; height: 100%; }
-  .node-circle { cursor: pointer; stroke-width: 2.5; transition: opacity 0.2s; }
-  .node-label { font-size: 11px; font-weight: 600; pointer-events: none; text-anchor: middle; dominant-baseline: middle; fill: #fff; }
-  .node-sublabel { font-size: 9px; pointer-events: none; text-anchor: middle; dominant-baseline: middle; fill: rgba(255,255,255,0.85); }
+  .node-circle { stroke-width: 2.5; }
+  .node-label { font-size: 11px; font-weight: 600; text-anchor: middle; dominant-baseline: middle; fill: #fff; }
+  .node-sublabel { font-size: 9px; text-anchor: middle; dominant-baseline: middle; fill: rgba(255,255,255,0.85); }
   .link { fill: none; stroke-width: 1.8; opacity: 0.7; }
-  .link-label { font-size: 9px; fill: #555; pointer-events: none; }
-  .loop-label { font-size: 10px; font-weight: 700; pointer-events: none; }
+  .link-label { font-size: 9px; fill: #555; text-anchor: middle; }
+  .loop-label { font-size: 10px; font-weight: 700; opacity: 0.7; }
   #legend { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.95); border: 1px solid #ddd; border-radius: 8px; padding: 12px 14px; font-size: 10px; max-width: 190px; }
   #legend h3 { font-size: 11px; font-weight: 700; margin-bottom: 8px; color: #333; }
   .leg-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; color: #444; }
   .leg-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
   .leg-line { width: 22px; height: 3px; flex-shrink: 0; border-radius: 2px; }
-  #tooltip { position: absolute; background: rgba(20,20,20,0.88); color: #fff; font-size: 11px; border-radius: 6px; padding: 8px 10px; max-width: 240px; pointer-events: none; display: none; line-height: 1.5; z-index: 99; }
-  #controls { position: absolute; bottom: 12px; right: 12px; display: flex; gap: 6px; }
-  .ctrl-btn { background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 5px 10px; font-size: 11px; cursor: pointer; color: #333; }
-  .ctrl-btn:hover { background: #f0f0f0; }
   #loop-panel { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.95); border: 1px solid #ddd; border-radius: 8px; padding: 12px 14px; font-size: 10px; max-width: 200px; }
   #loop-panel h3 { font-size: 11px; font-weight: 700; margin-bottom: 8px; color: #333; }
-  .loop-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; cursor: pointer; color: #444; padding: 3px 4px; border-radius: 4px; transition: background 0.15s; }
-  .loop-row:hover { background: #f0f0f0; }
+  .loop-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; color: #444; }
   .loop-badge { font-size: 9px; font-weight: 700; border-radius: 3px; padding: 1px 5px; color: #fff; flex-shrink: 0; }
-  #title-bar { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(31,78,121,0.92); color: #fff; border-radius: 8px; padding: 7px 18px; font-size: 12px; font-weight: 700; pointer-events: none; white-space: nowrap; }
+  #title-bar { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(31,78,121,0.92); color: #fff; border-radius: 8px; padding: 7px 18px; font-size: 12px; font-weight: 700; white-space: nowrap; }
 </style>
 </head>
 <body>
-<div id="canvas"><svg id="svg"></svg></div>
+<div id="canvas">
+<svg id="svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <marker id="arr555" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#555" opacity="0.85"/></marker><marker id="arrC00000" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#C00000" opacity="0.85"/></marker><marker id="arrE97132" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#E97132" opacity="0.85"/></marker><marker id="arr70AD47" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#70AD47" opacity="0.85"/></marker><marker id="arr2E75B6" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2E75B6" opacity="0.85"/></marker><marker id="arr5B9BD5" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#5B9BD5" opacity="0.85"/></marker><marker id="arr9DC3E6" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#9DC3E6" opacity="0.85"/></marker><marker id="arr7030A0" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#7030A0" opacity="0.85"/></marker><marker id="arr375623" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#375623" opacity="0.85"/></marker><marker id="arr999" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#999" opacity="0.85"/></marker>
+  </defs>
+  <g>
+    <path class="link" d="M783.83,277.70 A61.57,61.57 0 0,1 822.41,263.67" stroke="#C00000" marker-end="url(#arrC00000)" /> <text class="link-label" x="805.00" y="262.00">+</text> <path class="link" d="M844.00,280.00 A408.00,408.00 0 0,1 716.00,520.00" stroke="#C00000" marker-end="url(#arrC00000)" /> <text class="link-label" x="780.00" y="392.00">+</text> <path class="link" d="M705.29,522.50 A292.15,292.15 0 0,1 742.07,331.24" stroke="#C00000" marker-end="url(#arrC00000)" /> <text class="link-label" x="725.00" y="412.00">-</text> <path class="link" d="M957.01,550.15 A350.24,350.24 0 0,1 933.78,317.81" stroke="#E97132" marker-end="url(#arrE97132)" /> <text class="link-label" x="945.00" y="422.00">+</text> <path class="link" d="M908.93,304.08 A204.90,204.90 0 0,1 818.97,406.89" stroke="#E97132" marker-end="url(#arrE97132)" /> <text class="link-label" x="860.00" y="352.00">+</text> <path class="link" d="M819.33,464.16 A219.34,219.34 0 0,1 932.21,557.11" stroke="#E97132" marker-end="url(#arrE97132)" /> <text class="link-label" x="875.00" y="502.00">+</text> <path class="link" d="M944.31,308.62 A126.79,126.79 0 0,1 982.11,384.22" stroke="#70AD47" marker-end="url(#arr70AD47)" /> <text class="link-label" x="965.00" y="342.00">+</text> <path class="link" d="M1022.87,445.16 A117.99,117.99 0 0,1 1075.78,503.36" stroke="#70AD47" marker-end="url(#arr70AD47)" /> <text class="link-label" x="1050.00" y="467.00">+</text> <path class="link" d="M1091.76,501.15 A222.60,222.60 0 0,1 1050.99,358.46" stroke="#70AD47" marker-end="url(#arr70AD47)" /> <text class="link-label" x="1070.00" y="417.00">+</text> <path class="link" d="M1008.05,308.38 A67.57,67.57 0 0,1 965.71,292.99" stroke="#70AD47" marker-end="url(#arr70AD47)" /> <text class="link-label" x="985.00" y="292.00">+</text> <path class="link" d="M596.41,494.22 A125.47,125.47 0 0,1 670.06,533.88" stroke="#2E75B6" marker-end="url(#arr2E75B6)" /> <text class="link-label" x="635.00" y="507.00">-</text> <path class="link" d="M717.73,528.33 A105.19,105.19 0 0,1 762.14,474.05" stroke="#2E75B6" marker-end="url(#arr2E75B6)" /> <text class="link-label" x="745.00" y="487.00">+</text> <path class="link" d="M752.61,446.80 A224.41,224.41 0 0,1 605.42,473.56" stroke="#2E75B6" marker-end="url(#arr2E75B6)" /> <text class="link-label" x="680.00" y="452.00">+</text> <path class="link" d="M590.63,458.22 A284.59,284.59 0 0,1 721.11,320.49" stroke="#5B9BD5" marker-end="url(#arr5B9BD5)" /> <text class="link-label" x="660.00" y="377.00">+</text> <path class="link" d="M759.28,324.78 A112.86,112.86 0 0,1 778.66,397.49" stroke="#5B9BD5" marker-end="url(#arr5B9BD5)" /> <text class="link-label" x="770.00" y="357.00">+</text> <path class="link" d="M762.33,466.04 A239.18,239.18 0 0,1 646.22,575.33" stroke="#5B9BD5" marker-end="url(#arr5B9BD5)" /> <text class="link-label" x="705.00" y="512.00">+</text> <path class="link" d="M608.46,572.31 A96.00,96.00 0 0,1 583.85,513.23" stroke="#5B9BD5" marker-end="url(#arr5B9BD5)" /> <text class="link-label" x="595.00" y="532.00">-</text> <path class="link" d="M620.79,273.05 A141.31,141.31 0 0,1 560.49,345.42" stroke="#9DC3E6" marker-end="url(#arr9DC3E6)" /> <text class="link-label" x="590.00" y="302.00">+</text> <path class="link" d="M564.30,360.74 A235.08,235.08 0 0,1 710.75,304.95" stroke="#9DC3E6" marker-end="url(#arr9DC3E6)" /> <text class="link-label" x="645.00" y="322.00">-</text> <path class="link" d="M716.17,277.70 A67.57,67.57 0 0,1 673.83,262.30" stroke="#9DC3E6" marker-end="url(#arr9DC3E6)" /> <text class="link-label" x="695.00" y="262.00">+</text> <path class="link" d="M962.75,457.34 A141.09,141.09 0 0,1 1020.39,354.86" stroke="#999" marker-end="url(#arr999)" stroke-dasharray="4,3" /> <text class="link-label" x="995.00" y="392.00">-</text> <path class="link" d="M924.78,473.69 A113.91,113.91 0 0,1 832.69,450.67" stroke="#999" marker-end="url(#arr999)" stroke-dasharray="4,3" /> <text class="link-label" x="870.00" y="452.00">-</text> <path class="link" d="M872.94,533.94 A74.48,74.48 0 0,1 923.78,498.35" stroke="#7030A0" marker-end="url(#arr7030A0)" stroke-dasharray="4,3" /> <text class="link-label" x="900.00" y="507.00">overg.</text> <path class="link" d="M1042.09,629.27 A94.71,94.71 0 0,1 1081.86,561.10" stroke="#7030A0" marker-end="url(#arr7030A0)" stroke-dasharray="4,3" /> <text class="link-label" x="1065.00" y="582.00">+</text> <path class="link" d="M771.95,655.28 A468.26,468.26 0 0,1 651.15,284.23" stroke="#375623" marker-end="url(#arr375623)" stroke-dasharray="4,3" /> <text class="link-label" x="710.00" y="457.00">opl.</text> <path class="link" d="M789.13,655.66 A435.84,435.84 0 0,1 916.66,315.58" stroke="#375623" marker-end="url(#arr375623)" stroke-dasharray="4,3" /> <text class="link-label" x="855.00" y="472.00">+</text> <path class="link" d="M905.49,618.41 A213.19,213.19 0 0,1 1067.23,544.90" stroke="#375623" marker-end="url(#arr375623)" stroke-dasharray="4,3" /> <text class="link-label" x="990.00" y="572.00">+</text> <path class="link" d="M1023.33,349.63 A141.09,141.09 0 0,1 965.69,452.11" stroke="#999" marker-end="url(#arr999)" stroke-dasharray="4,3" /> <text class="link-label" x="995.00" y="392.00">-</text> <path class="link" d="M969.83,404.31 A246.94,246.94 0 0,1 787.26,309.38" stroke="#999" marker-end="url(#arr999)" stroke-dasharray="4,3" /> <text class="link-label" x="875.00" y="347.00">+</text> <path class="link" d="M870.00,603.85 A352.81,352.81 0 0,1 765.00,329.23" stroke="#999" marker-end="url(#arr999)" stroke-dasharray="4,3" /> <text class="link-label" x="815.00" y="452.00">-</text>
+    <text class="loop-label" x="750.00" y="360.00" fill="#C00000">R1 Isolatie</text> <text class="loop-label" x="930.00" y="460.00" fill="#E97132">R2 Camille</text> <text class="loop-label" x="1020.00" y="350.00" fill="#70AD47">R3 Wederkerig</text> <text class="loop-label" x="690.00" y="510.00" fill="#2E75B6">B1 Autonomie</text> <text class="loop-label" x="670.00" y="550.00" fill="#5B9BD5">B2 Personeel</text> <text class="loop-label" x="700.00" y="320.00" fill="#9DC3E6">B3 Rituaal</text>
+    <g transform="translate(790.00,440.00)">   <circle class="node-circle" r="38" fill="#1F4E79" stroke="#0c1f30"/>   <text class="node-label" y="-5">Bewoners</text>   <text class="node-sublabel" y="7">ouderen</text> </g> <g transform="translate(1040.00,320.00)">   <circle class="node-circle" r="34" fill="#1F4E79" stroke="#0c1f30"/>   <text class="node-label" y="-5">Jongeren</text>   <text class="node-sublabel" y="7">buiten huis</text> </g> <g transform="translate(960.00,580.00)">   <circle class="node-circle" r="30" fill="#1F4E79" stroke="#0c1f30"/>   <text class="node-label" y="-5">Jonge mede-</text>   <text class="node-sublabel" y="7">werkers (Camille)</text> </g> <g transform="translate(620.00,600.00)">   <circle class="node-circle" r="30" fill="#1F4E79" stroke="#0c1f30"/>   <text class="node-label" y="-5">Activiteiten-</text>   <text class="node-sublabel" y="7">begeleiders</text> </g> <g transform="translate(540.00,370.00)">   <circle class="node-circle" r="26" fill="#1F4E79" stroke="#0c1f30"/>   <text class="node-label" y="-5">Familie</text>   <text class="node-sublabel" y="7">kinderen/kleinkin.</text> </g> <g transform="translate(750.00,290.00)">   <circle class="node-circle" r="36" fill="#C00000" stroke="#4c0000"/>   <text class="node-label" y="-5">Structurele</text>   <text class="node-sublabel" y="7">eenzaamheid</text> </g> <g transform="translate(570.00,480.00)">   <circle class="node-circle" r="30" fill="#C00000" stroke="#4c0000"/>   <text class="node-label" y="-5">Personeels-</text>   <text class="node-sublabel" y="7">tekort</text> </g> <g transform="translate(640.00,250.00)">   <circle class="node-circle" r="30" fill="#C00000" stroke="#4c0000"/>   <text class="node-label" y="-5">Verdwenen</text>   <text class="node-sublabel" y="7">ritueel</text> </g> <g transform="translate(950.00,480.00)">   <circle class="node-circle" r="26" fill="#C00000" stroke="#4c0000"/>   <text class="node-label" y="-5">Generatie-</text>   <text class="node-sublabel" y="7">kloof (stijl)</text> </g> <g transform="translate(860.00,250.00)">   <circle class="node-circle" r="34" fill="#2E75B6" stroke="#122e48"/>   <text class="node-label" y="-5">Zingeving &</text>   <text class="node-sublabel" y="7">activiteit</text> </g> <g transform="translate(1000.00,420.00)">   <circle class="node-circle" r="34" fill="#2E75B6" stroke="#122e48"/>   <text class="node-label" y="-5">Onbenutte</text>   <text class="node-sublabel" y="7">levenswijsheid</text> </g> <g transform="translate(700.00,550.00)">   <circle class="node-circle" r="28" fill="#2E75B6" stroke="#122e48"/>   <text class="node-label" y="-5">Autonomie-</text>   <text class="node-sublabel" y="7">behoefte</text> </g> <g transform="translate(880.00,630.00)">   <circle class="node-circle" r="28" fill="#2E75B6" stroke="#122e48"/>   <text class="node-label" y="-5">Naar buiten</text>   <text class="node-sublabel" y="7">wijk/natuur</text> </g> <g transform="translate(930.00,280.00)">   <circle class="node-circle" r="32" fill="#375623" stroke="#16220e"/>   <text class="node-label" y="-5">Wederkerig-</text>   <text class="node-sublabel" y="7">heid (potentieel)</text> </g> <g transform="translate(1100.00,530.00)">   <circle class="node-circle" r="30" fill="#375623" stroke="#16220e"/>   <text class="node-label" y="-5">Verbindings-</text>   <text class="node-sublabel" y="7">katalysatoren</text> </g> <g transform="translate(780.00,680.00)">   <circle class="node-circle" r="26" fill="#375623" stroke="#16220e"/>   <text class="node-label" y="-5">Nieuw</text>   <text class="node-sublabel" y="7">ritueel</text> </g> <g transform="translate(850.00,550.00)">   <circle class="node-circle" r="28" fill="#7030A0" stroke="#2c1340"/>   <text class="node-label" y="-5">Respect +</text>   <text class="node-sublabel" y="7">vrijwilligheid</text> </g> <g transform="translate(1030.00,650.00)">   <circle class="node-circle" r="24" fill="#7030A0" stroke="#2c1340"/>   <text class="node-label" y="-5">Maatwerk</text>   <text class="node-sublabel" y="7">per profiel</text> </g>
+  </g>
+</svg>
+</div>
 <div id="title-bar">Systeemkaart Laurens Rubroek — Verbinding ouderen &amp; jongeren</div>
 <div id="legend">
   <h3>Knooppunten</h3>
@@ -48,110 +54,12 @@
 </div>
 <div id="loop-panel">
   <h3>Feedbackloops</h3>
-  <div class="loop-row" data-loop="R1"><div class="loop-badge" style="background:#C00000">R1</div>Isolatieloop</div>
-  <div class="loop-row" data-loop="R2"><div class="loop-badge" style="background:#C00000">R2</div>Camille-effect</div>
-  <div class="loop-row" data-loop="R3"><div class="loop-badge" style="background:#C00000">R3</div>Wederkerigheidsloop</div>
-  <div class="loop-row" data-loop="B1"><div class="loop-badge" style="background:#2E75B6">B1</div>Autonomieverlies</div>
-  <div class="loop-row" data-loop="B2"><div class="loop-badge" style="background:#2E75B6">B2</div>Personeelsdruk</div>
-  <div class="loop-row" data-loop="B3"><div class="loop-badge" style="background:#2E75B6">B3</div>Rituaalverlies</div>
+  <div class="loop-row"><div class="loop-badge" style="background:#C00000">R1</div>Isolatieloop</div>
+  <div class="loop-row"><div class="loop-badge" style="background:#C00000">R2</div>Camille-effect</div>
+  <div class="loop-row"><div class="loop-badge" style="background:#C00000">R3</div>Wederkerigheidsloop</div>
+  <div class="loop-row"><div class="loop-badge" style="background:#2E75B6">B1</div>Autonomieverlies</div>
+  <div class="loop-row"><div class="loop-badge" style="background:#2E75B6">B2</div>Personeelsdruk</div>
+  <div class="loop-row"><div class="loop-badge" style="background:#2E75B6">B3</div>Rituaalverlies</div>
 </div>
-<div id="tooltip"></div>
-<div id="controls">
-  <button class="ctrl-btn" id="resetBtn">Reset weergave</button>
-  <button class="ctrl-btn" id="allLoopsBtn">Alle loops</button>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-<script>
-const W=window.innerWidth,H=window.innerHeight,cx=W/2,cy=H/2;
-const nodes=[
-  {id:'bewoners',label:'Bewoners',sub:'ouderen',color:'#1F4E79',r:38,info:'Diverse groep: van zelfstandig (Gerrit) tot volledig zorgafhankelijk (Nico). Allen bezitten levenswijsheid en verlangen naar wederkerig contact.'},
-  {id:'jongeren',label:'Jongeren',sub:'buiten huis',color:'#1F4E79',r:34,info:'Volledig afwezig als structurele groep. Bewoners kennen nauwelijks jongeren. Potentieel groot: technologie, energie, frisse blik.'},
-  {id:'camille',label:'Jonge mede-',sub:'werkers (Camille)',color:'#1F4E79',r:30,info:'Camille (19) is het bewijs dat verbinding werkt. Wordt door meerdere bewoners spontaan als ideaal voorbeeld aangehaald. Nog niet structureel verankerd.'},
-  {id:'begeleiders',label:'Activiteiten-',sub:'begeleiders',color:'#1F4E79',r:30,info:'Carline en Jolanda zijn het scharnierpunt voor activiteiten. Essentieel maar structureel overvraagd.'},
-  {id:'familie',label:'Familie',sub:'kinderen/kleinkin.',color:'#1F4E79',r:26,info:'Sporadisch aanwezig. Werk, afstand of familieconflicten beperken bezoek.'},
-  {id:'eenzaamheid',label:'Structurele',sub:'eenzaamheid',color:'#C00000',r:36,info:'Bewoners zijn omringd door mensen maar missen diepgaand contact. Zichtbaar bij alle 8 respondenten.'},
-  {id:'personeels',label:'Personeels-',sub:'tekort',color:'#C00000',r:30,info:'Medewerkers hebben te weinig tijd voor persoonlijk contact. Kleine extraatjes (nagels, buiten) vallen buiten de vaste taken.'},
-  {id:'rituaalverlies',label:'Verdwenen',sub:'ritueel',color:'#C00000',r:30,info:'De gewoonte kinderen naar ouderen te sturen is weggevallen. Er is geen enkel structureel mechanisme voor intergenerationeel contact.'},
-  {id:'kloof',label:'Generatie-',sub:'kloof (stijl)',color:'#C00000',r:26,info:'Jongeren: technologie, informaliteit. Ouderen: structuur, respect. Beide nodig maar botsen zonder voorbereiding.'},
-  {id:'zingeving',label:'Zingeving &',sub:'activiteit',color:'#2E75B6',r:34,info:'Haken, punniken, knutselen, kaarten maken. Maar het aanbod is homogeen en sluit niet aan op diverse capaciteiten.'},
-  {id:'onbenut',label:'Onbenutte',sub:'levenswijsheid',color:'#2E75B6',r:34,info:'Scheepsbouw (Gerrit), onderwijs (Evelina), bloemisterie (Arie), scheikunde (Jan): enorme kennisreserve volledig onbenut.'},
-  {id:'autonomie',label:'Autonomie-',sub:'behoefte',color:'#2E75B6',r:28,info:'"Ik kan alles nog zelf." (Gerrit) De zorglogica ondermijnt autonomie systematisch.'},
-  {id:'buiten',label:'Naar buiten',sub:'wijk/natuur',color:'#2E75B6',r:28,info:'De meest universele wens van bijna alle bewoners. Tegelijk het minst gefaciliteerd.'},
-  {id:'wederkerig',label:'Wederkerig-',sub:'heid (potentieel)',color:'#375623',r:32,info:'Bewoners willen niet alleen ontvangen maar ook geven: kennis, verhalen, humor, gezelschap.'},
-  {id:'katalysator',label:'Verbindings-',sub:'katalysatoren',color:'#375623',r:30,info:'Muziek, handwerk, koken, zeevissen, moestuin, stijl: gedeelde activiteiten die generaties verbinden.'},
-  {id:'ritueel_nieuw',label:'Nieuw',sub:'ritueel',color:'#375623',r:26,info:'Een hedendaags ritueel: vaste, kleine, regelmatige activiteit die intergenerationeel contact structureert.'},
-  {id:'respect',label:'Respect +',sub:'vrijwilligheid',color:'#7030A0',r:28,info:'"Niet jij en een jouwe, dan stuur ik je de deur uit." (Gerrit) Non-onderhandelbare randvoorwaarde.'},
-  {id:'maatwerk',label:'Maatwerk',sub:'per profiel',color:'#7030A0',r:24,info:'Van Gerrit (zeevissen) tot Nico (muziek, stilte): geen one-size-fits-all aanpak.'},
-];
-const positions={bewoners:{x:cx-10,y:cy-10},jongeren:{x:cx+240,y:cy-130},camille:{x:cx+160,y:cy+130},begeleiders:{x:cx-180,y:cy+150},familie:{x:cx-260,y:cy-80},eenzaamheid:{x:cx-50,y:cy-160},personeels:{x:cx-230,y:cy+30},rituaalverlies:{x:cx-160,y:cy-200},kloof:{x:cx+150,y:cy+30},zingeving:{x:cx+60,y:cy-200},onbenut:{x:cx+200,y:cy-30},autonomie:{x:cx-100,y:cy+100},buiten:{x:cx+80,y:cy+180},wederkerig:{x:cx+130,y:cy-170},katalysator:{x:cx+300,y:cy+80},ritueel_nieuw:{x:cx-20,y:cy+230},respect:{x:cx+50,y:cy+100},maatwerk:{x:cx+230,y:cy+200}};
-nodes.forEach(n=>{n.x=positions[n.id]?.x??cx;n.y=positions[n.id]?.y??cy;});
-const links=[
-  {source:'eenzaamheid',target:'zingeving',label:'+',loop:'R1',color:'#C00000'},
-  {source:'zingeving',target:'autonomie',label:'+',loop:'R1',color:'#C00000'},
-  {source:'autonomie',target:'eenzaamheid',label:'-',loop:'R1',color:'#C00000'},
-  {source:'camille',target:'wederkerig',label:'+',loop:'R2',color:'#E97132'},
-  {source:'wederkerig',target:'bewoners',label:'+',loop:'R2',color:'#E97132'},
-  {source:'bewoners',target:'camille',label:'+',loop:'R2',color:'#E97132'},
-  {source:'wederkerig',target:'onbenut',label:'+',loop:'R3',color:'#70AD47'},
-  {source:'onbenut',target:'katalysator',label:'+',loop:'R3',color:'#70AD47'},
-  {source:'katalysator',target:'jongeren',label:'+',loop:'R3',color:'#70AD47'},
-  {source:'jongeren',target:'wederkerig',label:'+',loop:'R3',color:'#70AD47'},
-  {source:'personeels',target:'autonomie',label:'-',loop:'B1',color:'#2E75B6'},
-  {source:'autonomie',target:'bewoners',label:'+',loop:'B1',color:'#2E75B6'},
-  {source:'bewoners',target:'personeels',label:'+',loop:'B1',color:'#2E75B6'},
-  {source:'personeels',target:'eenzaamheid',label:'+',loop:'B2',color:'#5B9BD5'},
-  {source:'eenzaamheid',target:'bewoners',label:'+',loop:'B2',color:'#5B9BD5'},
-  {source:'bewoners',target:'begeleiders',label:'+',loop:'B2',color:'#5B9BD5'},
-  {source:'begeleiders',target:'personeels',label:'-',loop:'B2',color:'#5B9BD5'},
-  {source:'rituaalverlies',target:'familie',label:'+',loop:'B3',color:'#9DC3E6'},
-  {source:'familie',target:'eenzaamheid',label:'-',loop:'B3',color:'#9DC3E6'},
-  {source:'eenzaamheid',target:'rituaalverlies',label:'+',loop:'B3',color:'#9DC3E6'},
-  {source:'kloof',target:'jongeren',label:'-',color:'#999'},
-  {source:'kloof',target:'bewoners',label:'-',color:'#999'},
-  {source:'respect',target:'kloof',label:'overg.',color:'#7030A0'},
-  {source:'maatwerk',target:'katalysator',label:'+',color:'#7030A0'},
-  {source:'ritueel_nieuw',target:'rituaalverlies',label:'opl.',color:'#375623'},
-  {source:'ritueel_nieuw',target:'wederkerig',label:'+',color:'#375623'},
-  {source:'buiten',target:'katalysator',label:'+',color:'#375623'},
-  {source:'jongeren',target:'kloof',label:'-',color:'#999'},
-  {source:'onbenut',target:'eenzaamheid',label:'+',color:'#999'},
-  {source:'buiten',target:'eenzaamheid',label:'-',color:'#999'},
-];
-const svg=d3.select('#svg'),g=svg.append('g');
-const defs=svg.append('defs');
-['#555','#C00000','#E97132','#70AD47','#2E75B6','#5B9BD5','#9DC3E6','#7030A0','#375623','#999'].forEach(col=>{
-  const id='arr'+col.replace('#','');
-  defs.append('marker').attr('id',id).attr('markerWidth',8).attr('markerHeight',8).attr('refX',7).attr('refY',3).attr('orient','auto')
-    .append('path').attr('d','M0,0 L0,6 L8,3 z').attr('fill',col).attr('opacity',0.85);
-});
-let activeLoop=null;
-function getMarker(col){return`url(#arr${col.replace('#','')})`;} 
-function arcPath(sx,sy,tx,ty,r){const dx=tx-sx,dy=ty-sy,dr=Math.sqrt(dx*dx+dy*dy)*r;return`M${sx},${sy} A${dr},${dr} 0 0,1 ${tx},${ty}`;}
-const linkElems=g.selectAll('.link').data(links).enter().append('path').attr('class','link').attr('stroke',d=>d.color||'#555').attr('marker-end',d=>getMarker(d.color||'#555')).attr('stroke-dasharray',d=>d.loop?null:'4,3');
-const linkLabels=g.selectAll('.link-label').data(links).enter().append('text').attr('class','link-label').text(d=>d.label||'');
-const loopInfo=[{id:'R1',label:'R1 Isolatie',x:cx-50,y:cy-90,color:'#C00000'},{id:'R2',label:'R2 Camille',x:cx+130,y:cy+10,color:'#E97132'},{id:'R3',label:'R3 Wederkerig',x:cx+220,y:cy-100,color:'#70AD47'},{id:'B1',label:'B1 Autonomie',x:cx-110,y:cy+60,color:'#2E75B6'},{id:'B2',label:'B2 Personeel',x:cx-130,y:cy+100,color:'#5B9BD5'},{id:'B3',label:'B3 Rituaal',x:cx-100,y:cy-130,color:'#9DC3E6'}];
-const loopLabels=g.selectAll('.loop-label').data(loopInfo).enter().append('text').attr('class','loop-label').attr('x',d=>d.x).attr('y',d=>d.y).attr('fill',d=>d.color).text(d=>d.label).attr('opacity',0.7);
-const nodeG=g.selectAll('.node-g').data(nodes).enter().append('g').attr('class','node-g')
-  .call(d3.drag().on('start',(ev,d)=>{d.dragging=true;}).on('drag',(ev,d)=>{d.x=ev.x;d.y=ev.y;tick();}).on('end',(ev,d)=>{d.dragging=false;}))
-  .on('mouseover',(ev,d)=>{const tt=document.getElementById('tooltip');tt.innerHTML=`<strong>${d.label} ${d.sub}</strong><br>${d.info}`;tt.style.display='block';tt.style.left=(ev.pageX+12)+'px';tt.style.top=(ev.pageY-30)+'px';})
-  .on('mousemove',ev=>{const tt=document.getElementById('tooltip');tt.style.left=(ev.pageX+12)+'px';tt.style.top=(ev.pageY-30)+'px';})
-  .on('mouseout',()=>{document.getElementById('tooltip').style.display='none';});
-nodeG.append('circle').attr('class','node-circle').attr('r',d=>d.r).attr('fill',d=>d.color).attr('stroke',d=>d3.color(d.color).darker(0.6));
-nodeG.append('text').attr('class','node-label').attr('y',d=>d.sub?-5:0).text(d=>d.label);
-nodeG.append('text').attr('class','node-sublabel').attr('y',7).text(d=>d.sub||'');
-function tick(){
-  nodeG.attr('transform',d=>`translate(${d.x},${d.y})`);
-  linkElems.attr('d',d=>{const sn=nodes.find(n=>n.id===d.source),tn=nodes.find(n=>n.id===d.target);if(!sn||!tn)return'';const dx=tn.x-sn.x,dy=tn.y-sn.y,dist=Math.sqrt(dx*dx+dy*dy)||1;return arcPath(sn.x+dx/dist*sn.r,sn.y+dy/dist*sn.r,tn.x-dx/dist*(tn.r+6),tn.y-dy/dist*(tn.r+6),d.loop?1.5:1.2);});
-  linkLabels.attr('x',d=>{const sn=nodes.find(n=>n.id===d.source),tn=nodes.find(n=>n.id===d.target);return sn&&tn?(sn.x+tn.x)/2:0;}).attr('y',d=>{const sn=nodes.find(n=>n.id===d.source),tn=nodes.find(n=>n.id===d.target);return sn&&tn?(sn.y+tn.y)/2-8:0;});
-}
-tick();
-const zoom=d3.zoom().scaleExtent([0.3,3]).on('zoom',ev=>g.attr('transform',ev.transform));
-svg.call(zoom);
-function highlightLoop(loopId){if(activeLoop===loopId){activeLoop=null;resetHighlight();return;}activeLoop=loopId;linkElems.attr('opacity',d=>d.loop===loopId?1:0.12).attr('stroke-width',d=>d.loop===loopId?3:1.8);nodeG.attr('opacity',d=>{const ln=links.filter(l=>l.loop===loopId);return ln.some(l=>l.source===d.id||l.target===d.id)?1:0.2;});loopLabels.attr('opacity',d=>d.id===loopId?1:0.15);linkLabels.attr('opacity',d=>d.loop===loopId?1:0);}
-function resetHighlight(){activeLoop=null;linkElems.attr('opacity',0.7).attr('stroke-width',1.8);nodeG.attr('opacity',1);loopLabels.attr('opacity',0.7);linkLabels.attr('opacity',1);}
-document.querySelectorAll('.loop-row').forEach(el=>el.addEventListener('click',()=>highlightLoop(el.dataset.loop)));
-document.getElementById('resetBtn').addEventListener('click',()=>{resetHighlight();svg.transition().duration(400).call(zoom.transform,d3.zoomIdentity);});
-document.getElementById('allLoopsBtn').addEventListener('click',resetHighlight);
-</script>
 </body>
 </html>
